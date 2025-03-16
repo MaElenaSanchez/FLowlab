@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consejos Breves</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Roboto', sans-serif; margin: 0; padding: 20px; background-color: #f4f4f4; }
+        nav { background-color: #007bff; padding: 10px; border-radius: 5px; }
+        nav a { color: white; text-decoration: none; margin: 0 10px; font-weight: bold; }
+        nav a:hover { text-decoration: underline; }
+        .container { max-width: 800px; margin: 20px auto; }
+    </style>
+</head>
+<body>
+    <!-- Menú de navegación -->
+    <nav>
+        <a href="index.html">Inicio</a>
+        <a href="test_nom035.html">Test NOM-035</a>
+        <a href="pausas_activas.html">Pausas Activas</a>
+        <a href="diario_emocional.html">Diario Emocional</a>
+        <a href="consejos_breves.html">Consejos</a>
+        <a href="checklist_nom035.html">Checklist NOM-035</a>
+    </nav>
+
+    <!-- Contenido -->
+    <div class="container">
+        <h1>Consejos Breves</h1>
+        <p id="tip"></p>
+    </div>
+
+    <!-- Firebase y consejos aleatorios -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDqcgnfjmdx07DMo-d8C7hNcPP19vS-5xA",
+            authDomain: "flowlab-b3740.firebaseapp.com",
+            projectId: "flowlab-b3740",
+            storageBucket: "flowlab-b3740.firebasestorage.app",
+            messagingSenderId: "443499566816",
+            appId: "1:443499566816:web:39d38f4b8c26f58c6ea285"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth();
+
+        onAuthStateChanged(auth, (user) => {
+            if (!user) window.location.href = "index.html";
+            else {
+                const tips = [
+                    "Toma agua regularmente para mantenerte hidratado.",
+                    "Duerme al menos 7 horas para reducir el estrés.",
+                    "Haz una pausa de 5 minutos cada hora de trabajo intenso."
+                ];
+                document.getElementById('tip').innerText = tips[Math.floor(Math.random() * tips.length)];
+            }
+        });
+    </script>
+</body>
+</html>
