@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión - Bienestar Laboral</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 400px;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 0;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        p {
+            color: #666;
+        }
+        a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <!-- Contenido de la página -->
+    <div class="container">
+        <h1>Iniciar Sesión</h1>
+        <input type="email" id="email" placeholder="Correo electrónico">
+        <input type="password" id="password" placeholder="Contraseña">
+        <button id="loginBtn">Iniciar Sesión</button>
+        <p>¿No tienes cuenta? <a href="#" id="registerLink">Regístrate aquí</a></p>
+        <div id="message"></div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
+
+        // Configuración de Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyDqcgnfjmdx07DMo-d8C7hNcPP19vS-5xA",
+            authDomain: "flowlab-b3740.firebaseapp.com",
+            projectId: "flowlab-b3740",
+            storageBucket: "flowlab-b3740.firebasestorage.app",
+            messagingSenderId: "443499566816",
+            appId: "1:443499566816:web:39d38f4b8c26f58c6ea285"
+        };
+
+        // Inicializar Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth();
+
+        // Redirigir si ya está autenticado
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                window.location.href = "index.html"; // Redirige a la página principal si ya hay sesión
+            }
+        });
+
+        // Iniciar sesión
+        document.getElementById('loginBtn').addEventListener('click', () => {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            signInWithEmailAndPassword(auth, email, password)
+                .then(() => {
+                    window.location.href = "index.html"; // Redirige tras iniciar sesión
+                })
+                .catch((error) => {
+                    document.getElementById('message').innerText = `Error: ${error.message}`;
+                });
+        });
+
+        // Registro (opcional en la misma página)
+        document.getElementById('registerLink').addEventListener('click', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            createUserWithEmailAndPassword(auth, email, password)
+                .then(() => {
+                    document.getElementById('message').innerText = "Registro exitoso. Inicia sesión.";
+                })
+                .catch((error) => {
+                    document.getElementById('message').innerText = `Error: ${error.message}`;
+                });
+        });
+    </script>
+</body>
+</html>
