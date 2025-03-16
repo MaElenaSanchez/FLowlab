@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checklist NOM-035</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Roboto', sans-serif; margin: 0; padding: 20px; background-color: #f4f4f4; }
+        nav { background-color: #007bff; padding: 10px; border-radius: 5px; }
+        nav a { color: white; text-decoration: none; margin: 0 10px; font-weight: bold; }
+        nav a:hover { text-decoration: underline; }
+        .container { max-width: 800px; margin: 20px auto; }
+        form { display: flex; flex-direction: column; gap: 10px; }
+        button { padding: 8px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        button:hover { background-color: #0056b3; }
+    </style>
+</head>
+<body>
+    <!-- Menú de navegación -->
+    <nav>
+        <a href="index.html">Inicio</a>
+        <a href="test_nom035.html">Test NOM-035</a>
+        <a href="pausas_activas.html">Pausas Activas</a>
+        <a href="diario_emocional.html">Diario Emocional</a>
+        <a href="consejos_breves.html">Consejos</a>
+        <a href="checklist_nom035.html">Checklist NOM-035</a>
+    </nav>
+
+    <!-- Contenido -->
+    <div class="container">
+        <h1>Checklist NOM-035</h1>
+        <form id="checklistForm">
+            <label>¿Tienes claridad en tus responsabilidades? <input type="checkbox" name="claridad"></label>
+            <label>¿Sientes apoyo de tus superiores? <input type="checkbox" name="apoyo"></label>
+            <button type="submit">Guardar</button>
+        </form>
+        <div id="history"></div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
+        import { getFirestore, collection, addDoc, query, where, getDocs, orderBy } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDqcgnfjmdx07DMo-d8C7hNcPP19vS-5xA",
+            authDomain: "flowlab-b3740.firebaseapp.com",
+            projectId: "flowlab-b3740",
+            storageBucket: "flowlab-b3740.firebasestorage.app",
+            messagingSenderId: "443499566816",
+            appId: "1:443499566816:web:39d38f4b8c26f58c6ea285"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth();
+        const db = getFirestore();
+
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) window.location.href = "index.html";
+            else {
+                document.getElementById('checklistForm').addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const claridad = e.target.claridad.checked;
+                    const apoyo = e.target.apoyo.checked;
+                    await addDoc(collection(db, "checklist_nom035"), { userId: user.uid, claridad, apoyo, date: new Date() });
+                    loadHistory(user.uid);
+                });
+                loadHistory(user.uid);
+            }
+        });
+
+        async function loadHistory(userId) {
+            const q = query(collection(db, "checklist_nom035"), where("userId", "==", userId), orderBy("date", "desc"));
+            const querySnapshot = await getDocs(q);
+            let history = "Historial:<br>";
+            querySnapshot.forEach((doc) => {
+                const data = doc.data();
+                history += `${data.date.toDateString()}: Claridad: ${data.claridad}, Apoyo: ${data.apoyo}<br>`;
+            });
+            document.getElementById('history').innerHTML = history;
+        }
+    </script>
+</body>
+</html>
